@@ -23,10 +23,18 @@ public class PlayerController : MonoBehaviour
         movementY = movementVector.y;
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        Vector3 movement = new Vector3(movementX, 0.0f, movementY);
+        Vector3 movement = new Vector3 (movementX, 0.0f, movementY);
 
         rb.AddForce(movement * speed);
     }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("PickUp"))
+       {
+         other.gameObject.SetActive(false);
+       }
+    } 
 }
