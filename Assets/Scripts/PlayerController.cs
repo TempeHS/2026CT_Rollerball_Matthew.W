@@ -4,20 +4,27 @@ using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
-    public float speed = 0;
+    public float speed = 10f;
+    public float boostedSpeed = 50f;
     public TextMeshProUGUI countText;
     public GameObject winTextObject;
+    public float boostedDuration = 5f;
 
     private Rigidbody rb;
     private int count;
     private float movementX;
     private float movementY;
+    private bool isBoosted = false;
+    private float boostedTimer = 0f;
+    private float originalSpeed;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         count=0;
+
+        originalSpeed = speed;
 
         SetCountText();
         winTextObject.SetActive(false);
@@ -58,6 +65,13 @@ public class PlayerController : MonoBehaviour
             winTextObject.gameObject.SetActive(true);
             winTextObject.GetComponent<TextMeshProUGUI>().text = "You Lose!";
         }
+        else if (collision.gameObject.CompareTag("Doom"))
+        {
+            Destroy(gameObject);
+
+            winTextObject.SetActive(true);
+            winTextObject.GetComponent<TextMeshProUGUI>().text = "You Lose!";
+        }
        
     }
 
@@ -65,10 +79,33 @@ public class PlayerController : MonoBehaviour
     {
         if(other.gameObject.CompareTag("PickUp"))
        {
-         other.gameObject.SetActive(false);
-         count = count + 1;
+            other.gameObject.SetActive(false);
+            count = count + 1;
 
-         SetCountText();
+            SetCountText();
+       }
+       else if(other.gameObject.CompareTag("Speed Up"))
+       {
+            other.gameObject.SetActive(false);
+
+            speed = boostedSpeed;
+            isBoosted = true;
+            boostedTimer = boostedDuration;
        }
     }
+
+    void Update()
+    {
+        if (isBoosted)
+        {
+            boostedTimer -= Time.deltaTime;
+
+            if (boostedTimer <= 0)
+            {
+                isBoosted = false;
+                speed = originalSpeed;
+            }
+
+        }
+    } 
 }
